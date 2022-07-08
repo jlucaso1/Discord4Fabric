@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "d4f",
+  "version": "${version}",
+  "name": "Discord4Fabric",
+  "description": "A beautiful Discord bot client for Fabric",
+  "authors": [
+    "Reimnop"
+  ],
+  "contact": {
+    "website": "reimnop.me"
+  },
+  "license": "MIT",
+  "icon": "assets/d4f/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "me.reimnop.d4f.Discord4Fabric"
+    ]
+  },
+  "mixins": [
+    "d4f.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": ">=0.55.2",
+    "minecraft": ">=1.19"
+  }
+}

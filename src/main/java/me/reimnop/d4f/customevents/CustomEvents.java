@@ -7,10 +7,7 @@ import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.PlaceholderHandler;
 import eu.pb4.placeholders.api.PlaceholderResult;
 import me.reimnop.d4f.Discord4Fabric;
-import me.reimnop.d4f.customevents.ActionContext;
-import me.reimnop.d4f.customevents.ActionList;
 import me.reimnop.d4f.customevents.constraints.Constraint;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
@@ -89,8 +86,8 @@ public class CustomEvents {
 
         // Technoblade easter egg
         placeholderHandlers.put(
-                Discord4Fabric.id("pig"), (ctx, arg) -> PlaceholderResult.value(TechnobladeQuoteFactory.getRandomQuote())
-        );
+                Discord4Fabric.id("pig"),
+                (ctx, arg) -> PlaceholderResult.value(TechnobladeQuoteFactory.getRandomQuote()));
 
         if (externalHandlers != null) {
             placeholderHandlers.putAll(externalHandlers);
@@ -121,7 +118,8 @@ public class CustomEvents {
         constraintActionListPair.actionList.runActions(context);
     }
 
-    public void raiseEvent(String id, PlaceholderContext placeholderContext, @Nullable Map<String, Constraint> supportedConstraints) {
+    public void raiseEvent(String id, PlaceholderContext placeholderContext,
+            @Nullable Map<String, Constraint> supportedConstraints) {
         raiseEvent(id, placeholderContext, supportedConstraints, null);
     }
 }

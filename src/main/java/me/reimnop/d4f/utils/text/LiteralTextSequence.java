@@ -1,6 +1,5 @@
 package me.reimnop.d4f.utils.text;
 
-import me.reimnop.d4f.utils.Utils;
 import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;

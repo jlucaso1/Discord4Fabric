@@ -88,17 +88,21 @@ public class Discord {
     }
 
     public void sendPlayerMessage(PlayerEntity sender, Text name, Text message) {
+        String username = sender.getDisplayName().getString();
+
         WebhookMessageBuilder wmb = new WebhookMessageBuilder()
-                .setAvatarUrl(Utils.getAvatarUrl(sender.getUuid()))
+                .setAvatarUrl(Utils.getAvatarUrl(username))
                 .setUsername(name.getString())
                 .setContent(message.getString());
 
         webhookClient.send(wmb.build());
     }
 
-    public void sendEmbedMessageUsingPlayerAvatar(PlayerEntity sender, Color color, String message, String description) {
+    public void sendEmbedMessageUsingPlayerAvatar(PlayerEntity sender, Color color, String message,
+            String description) {
+        String username = sender.getDisplayName().getString();
         EmbedBuilder embedBuilder = new EmbedBuilder()
-                .setAuthor(message, null, Utils.getAvatarUrl(sender.getUuid()))
+                .setAuthor(message, null, Utils.getAvatarUrl(username))
                 .setDescription(description)
                 .setColor(color);
 
@@ -144,7 +148,6 @@ public class Discord {
 
     public void setStatus(Text status) {
         jda.getPresence().setActivity(
-                Activity.playing(status.getString())
-        );
+                Activity.playing(status.getString()));
     }
 }

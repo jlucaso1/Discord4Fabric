@@ -22,12 +22,10 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import javax.swing.text.html.Option;
 import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +33,8 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public final class MinecraftEventListeners {
-    private MinecraftEventListeners() {}
+    private MinecraftEventListeners() {
+    }
 
     private static final Pattern DISCORD_PING_PATTERN = Pattern.compile("<@(?<id>\\d+)>");
     private static final Pattern MINECRAFT_PING_PATTERN = Pattern.compile("@(?<tag>.+?#\\d{4})");
@@ -67,23 +66,22 @@ public final class MinecraftEventListeners {
             }
 
             Map<Identifier, PlaceholderHandler> placeholders = Map.of(
-                    Discord4Fabric.id("title"), (ctx, arg) -> PlaceholderResult.value(advancement.getDisplay().getTitle()),
-                    Discord4Fabric.id("description"), (ctx, arg) -> PlaceholderResult.value(advancement.getDisplay().getDescription())
-            );
+                    Discord4Fabric.id("title"),
+                    (ctx, arg) -> PlaceholderResult.value(advancement.getDisplay().getTitle()),
+                    Discord4Fabric.id("description"),
+                    (ctx, arg) -> PlaceholderResult.value(advancement.getDisplay().getDescription()));
 
             Text title = Placeholders.parseText(
                     TextParserUtils.formatText(titleStr),
                     PlaceholderContext.of(playerEntity),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             Text desc = Placeholders.parseText(
                     TextParserUtils.formatText(descStr),
                     PlaceholderContext.of(playerEntity),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             discord.sendEmbedMessageUsingPlayerAvatar(playerEntity, Color.yellow, title.getString(), desc.getString());
         });
@@ -93,8 +91,7 @@ public final class MinecraftEventListeners {
                 server -> {
                     Text status = Placeholders.parseText(
                             TextParserUtils.formatText(config.status),
-                            PlaceholderContext.of(server)
-                    );
+                            PlaceholderContext.of(server));
                     discord.setStatus(status);
                 });
 
@@ -107,14 +104,14 @@ public final class MinecraftEventListeners {
 
             Text message = Placeholders.parseText(
                     TextParserUtils.formatText(config.serverStartMessage),
-                    PlaceholderContext.of(server)
-            );
+                    PlaceholderContext.of(server));
             discord.sendPlainMessage(message);
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             if (!config.announceServerStartStop) {
-                // The bot should close discord regardless if it should announce start stop or not
+                // The bot should close discord regardless if it should announce start stop or
+                // not
                 // See: https://github.com/Reimnop/Discord4Fabric/issues/6
                 discord.close();
                 return;
@@ -122,8 +119,7 @@ public final class MinecraftEventListeners {
 
             Text message = Placeholders.parseText(
                     TextParserUtils.formatText(config.serverStopMessage),
-                    PlaceholderContext.of(server)
-            );
+                    PlaceholderContext.of(server));
             discord.sendPlainMessage(message);
 
             discord.close();
@@ -134,9 +130,14 @@ public final class MinecraftEventListeners {
                 String code = message.getContentRaw();
                 AccountLinking.LinkingResult result = accountLinking.tryLinkAccount(code, user.getIdLong());
                 switch (result) {
-                    case INVALID_CODE -> channel.sendMessage(new MessageBuilder().append("Invalid linking code!").build()).queue();
-                    case ACCOUNT_LINKED -> channel.sendMessage(new MessageBuilder().append("Your account was already linked!").build()).queue();
-                    case SUCCESS -> channel.sendMessage(new MessageBuilder().append("Your account was successfully linked!").build()).queue();
+                    case INVALID_CODE ->
+                        channel.sendMessage(new MessageBuilder().append("Invalid linking code!").build()).queue();
+                    case ACCOUNT_LINKED ->
+                        channel.sendMessage(new MessageBuilder().append("Your account was already linked!").build())
+                                .queue();
+                    case SUCCESS -> channel
+                            .sendMessage(new MessageBuilder().append("Your account was successfully linked!").build())
+                            .queue();
                 }
                 return;
             }
@@ -165,28 +166,29 @@ public final class MinecraftEventListeners {
                             if (pingedPlayerUuid.isPresent()) {
                                 ServerPlayerEntity player = server.getPlayerManager().getPlayer(pingedPlayerUuid.get());
                                 if (player != null) {
-                                    player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
+                                    player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.NEUTRAL, 1.0f,
+                                            1.0f);
                                 }
                             }
 
                             Map<Identifier, PlaceholderHandler> pingPlaceholders = Map.of(
-                                    Discord4Fabric.id("fullname"), (ctx, arg) -> PlaceholderResult.value(pingedUser.getAsTag()),
-                                    Discord4Fabric.id("nickname"), (ctx, arg) -> PlaceholderResult.value(pingedUser.getName()),
-                                    Discord4Fabric.id("discriminator"), (ctx, arg) -> PlaceholderResult.value(pingedUser.getDiscriminator())
-                            );
+                                    Discord4Fabric.id("fullname"),
+                                    (ctx, arg) -> PlaceholderResult.value(pingedUser.getAsTag()),
+                                    Discord4Fabric.id("nickname"),
+                                    (ctx, arg) -> PlaceholderResult.value(pingedUser.getName()),
+                                    Discord4Fabric.id("discriminator"),
+                                    (ctx, arg) -> PlaceholderResult.value(pingedUser.getDiscriminator()));
 
                             return Placeholders
                                     .parseText(
-                                        Text.literal(config.discordPingFormat), // We'll format this later
-                                        PlaceholderContext.of(server),
-                                        Placeholders.PLACEHOLDER_PATTERN,
-                                        placeholder -> Utils.getPlaceholderHandler(placeholder, pingPlaceholders)
-                                    )
+                                            Text.literal(config.discordPingFormat), // We'll format this later
+                                            PlaceholderContext.of(server),
+                                            Placeholders.PLACEHOLDER_PATTERN,
+                                            placeholder -> Utils.getPlaceholderHandler(placeholder, pingPlaceholders))
                                     .getString();
                         }
                         return match.group();
-                    }
-            );
+                    });
 
             parsedString = TextUtils.parseMarkdownToPAPI(parsedString);
             Text parsedMsg = TextParserUtils.formatText(parsedString);
@@ -195,16 +197,14 @@ public final class MinecraftEventListeners {
                     Discord4Fabric.id("fullname"), (ctx, arg) -> PlaceholderResult.value(user.getAsTag()),
                     Discord4Fabric.id("nickname"), (ctx, arg) -> PlaceholderResult.value(user.getName()),
                     Discord4Fabric.id("discriminator"), (ctx, arg) -> PlaceholderResult.value(user.getDiscriminator()),
-                    Discord4Fabric.id("message"), (ctx, arg) -> PlaceholderResult.value(parsedMsg)
-            );
+                    Discord4Fabric.id("message"), (ctx, arg) -> PlaceholderResult.value(parsedMsg));
 
             server.getPlayerManager().broadcast(
                     Placeholders.parseText(
                             TextParserUtils.formatText(config.discordToMinecraftMessage),
                             PlaceholderContext.of(server),
                             Placeholders.PLACEHOLDER_PATTERN,
-                            placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-                    ),
+                            placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)),
                     MessageType.SYSTEM);
         });
 
@@ -223,9 +223,11 @@ public final class MinecraftEventListeners {
                                 // Play ping sound to pinged user if they have an account linked
                                 Optional<UUID> pingedPlayerUuid = accountLinking.getLinkedAccount(user.getIdLong());
                                 if (pingedPlayerUuid.isPresent()) {
-                                    ServerPlayerEntity player = server.getPlayerManager().getPlayer(pingedPlayerUuid.get());
+                                    ServerPlayerEntity player = server.getPlayerManager()
+                                            .getPlayer(pingedPlayerUuid.get());
                                     if (player != null) {
-                                        player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
+                                        player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.NEUTRAL, 1.0f,
+                                                1.0f);
                                     }
                                 }
 
@@ -235,8 +237,7 @@ public final class MinecraftEventListeners {
                             Utils.logException(e);
                         }
                         return match.group();
-                    }
-            );
+                    });
 
             // Parse emojis
             content = TextUtils.regexDynamicReplaceString(
@@ -249,27 +250,23 @@ public final class MinecraftEventListeners {
                             return emote.getAsMention();
                         }
                         return match.group();
-                    }
-            );
+                    });
 
             String finalContent = content;
             Map<Identifier, PlaceholderHandler> placeholders = Map.of(
-                    Discord4Fabric.id("message"), (ctx, arg) -> PlaceholderResult.value(finalContent)
-            );
+                    Discord4Fabric.id("message"), (ctx, arg) -> PlaceholderResult.value(finalContent));
 
             Text msg = Placeholders.parseText(
                     TextParserUtils.formatText(config.minecraftToDiscordMessage),
                     PlaceholderContext.of(sender),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             Text name = Placeholders.parseText(
                     TextParserUtils.formatText(config.discordName),
                     PlaceholderContext.of(sender),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             discord.sendPlayerMessage(sender, name, msg);
         });
@@ -286,22 +283,20 @@ public final class MinecraftEventListeners {
 
             // Requested by https://github.com/Reimnop/Discord4Fabric/issues/15
             Map<Identifier, PlaceholderHandler> placeholders = Map.of(
-                    Discord4Fabric.id("post_online"), (ctx, arg) -> PlaceholderResult.value(String.valueOf(server.getCurrentPlayerCount() + 1))
-            );
+                    Discord4Fabric.id("post_online"),
+                    (ctx, arg) -> PlaceholderResult.value(String.valueOf(server.getCurrentPlayerCount() + 1)));
 
             Text msg = Placeholders.parseText(
                     TextParserUtils.formatText(config.playerJoinMessage),
                     PlaceholderContext.of(handler.player),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             Text desc = Placeholders.parseText(
                     TextParserUtils.formatText(config.playerJoinDescription),
                     PlaceholderContext.of(handler.player),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             discord.sendEmbedMessageUsingPlayerAvatar(handler.player, Color.green, msg.getString(), desc.getString());
         });
@@ -313,22 +308,20 @@ public final class MinecraftEventListeners {
 
             // Requested by https://github.com/Reimnop/Discord4Fabric/issues/15
             Map<Identifier, PlaceholderHandler> placeholders = Map.of(
-                    Discord4Fabric.id("post_online"), (ctx, arg) -> PlaceholderResult.value(String.valueOf(server.getCurrentPlayerCount() - 1))
-            );
+                    Discord4Fabric.id("post_online"),
+                    (ctx, arg) -> PlaceholderResult.value(String.valueOf(server.getCurrentPlayerCount() - 1)));
 
             Text msg = Placeholders.parseText(
                     TextParserUtils.formatText(config.playerLeftMessage),
                     PlaceholderContext.of(handler.player),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             Text desc = Placeholders.parseText(
                     TextParserUtils.formatText(config.playerLeftDescription),
                     PlaceholderContext.of(handler.player),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             discord.sendEmbedMessageUsingPlayerAvatar(handler.player, Color.red, msg.getString(), desc.getString());
         });
@@ -339,22 +332,19 @@ public final class MinecraftEventListeners {
             }
 
             Map<Identifier, PlaceholderHandler> placeholders = Map.of(
-                    Discord4Fabric.id("reason"), (ctx, arg) -> PlaceholderResult.value(deathMessage)
-            );
+                    Discord4Fabric.id("reason"), (ctx, arg) -> PlaceholderResult.value(deathMessage));
 
             Text msg = Placeholders.parseText(
                     TextParserUtils.formatText(config.deathMessage),
                     PlaceholderContext.of(playerEntity),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             Text desc = Placeholders.parseText(
                     TextParserUtils.formatText(config.deathDescription),
                     PlaceholderContext.of(playerEntity),
                     Placeholders.PLACEHOLDER_PATTERN,
-                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders)
-            );
+                    placeholder -> Utils.getPlaceholderHandler(placeholder, placeholders));
 
             discord.sendEmbedMessageUsingPlayerAvatar(playerEntity, Color.black, msg.getString(), desc.getString());
         }));

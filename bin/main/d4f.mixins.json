@@ -1,0 +1,8 @@
+{
+  "package": "me.reimnop.d4f.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "server": [
+    "ServerPlayerEntityMixin",
+    "PlayerAdvancementTrackerMixin"
+  ]
+}
