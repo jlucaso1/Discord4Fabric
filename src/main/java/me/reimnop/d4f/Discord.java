@@ -1,6 +1,7 @@
 package me.reimnop.d4f;
 
 import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.send.AllowedMentions;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import me.reimnop.d4f.exceptions.ChannelException;
 import me.reimnop.d4f.exceptions.GuildException;
@@ -77,6 +78,16 @@ public class Discord {
     }
 
     @Nullable
+    public Member getMember(User user) {
+        try {
+            return getGuild().getMember(user);
+        } catch (GuildException e) {
+            Utils.logException(e);
+        }
+        return null;
+    }
+
+    @Nullable
     public User findUser(String tag) throws GuildException {
         Member member = getGuild().getMemberByTag(tag);
         return member != null ? member.getUser() : null;
@@ -93,7 +104,11 @@ public class Discord {
         WebhookMessageBuilder wmb = new WebhookMessageBuilder()
                 .setAvatarUrl(Utils.getAvatarUrl(username))
                 .setUsername(name.getString())
-                .setContent(message.getString());
+                .setContent(message.getString())
+                .setAllowedMentions(new AllowedMentions()
+                        .withParseEveryone(false)
+                        .withParseRoles(false)
+                        .withParseUsers(true));
 
         webhookClient.send(wmb.build());
     }
